@@ -65,8 +65,9 @@ end
 % (Recall power of a test: probability that test rejects H0 when H1 is true)
 % power = 1 - false negative rate 
 
-false_neg_rate = sum(obs_delta < critical_val, 2)/length(obs_delta);
-power = 1 - false_neg_rate;
+false_neg_rate_delta = sum(obs_delta < critical_val, 2)/length(obs_delta);
+power = 1 - false_neg_rate_delta;
+
 figure()
 plot(delta, power)
 title('Delta vs Power')
@@ -77,7 +78,8 @@ ylabel('Power')
 sigma = 0:0.001:1;
 delta = 0.01:0.1:5;
 obs_sigma_delta = zeros(length(sigma), length(delta), 1000);
-%%
+
+% loop to generate data for each combination of sigma and delta 
 for i = 1:length(sigma)
     for j = 1:length(delta)
         Y = zeros(1, 1000);
@@ -92,9 +94,16 @@ for i = 1:length(sigma)
             % test statistic
             lambda_x = (var_hat_1/var_hat_0)^(T/2);
             chi_statistic = -2*log(lambda_x);
+            Y(k) = chi_statistic;
         end
         obs_sigma_delta(i, j, :) = Y;
     end
 end
-    
+
+%% Plot power of test as function of sigma and delta 
+false_neg_rate_sigma_delta = sum(obs_sigma_delta < critical_val, 3)/size(obs_sigma_delta, 3);
+power = 1 - false_neg_rate_sigma_delta;
+
+
+
     
